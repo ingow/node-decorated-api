@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+      {
+        "name": "Api",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "${workspaceRoot}/demo/node_modules/.bin/ts-node",
+        "program": "${workspaceRoot}/demo/src/index.ts",
+        "cwd": "${workspaceRoot}/demo",
+        "internalConsoleOptions": "openOnSessionStart",
+        "skipFiles": ["<node_internals>/**", "/demo/node_modules/**"]
+      }
+    ]
+  }

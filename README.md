@@ -77,14 +77,11 @@ Api.start();
 
 # Running the demo
 
-Go to lib/ and:
-1. `npm install`
-2. `npm link`
-
 Go to demo/ and:
 1. `npm install`
-2. `npm link node-decorated-api`
-3. `npm run start`
+2. `npm run start`
+
+We use the `tsconfig.json` `paths` to point to the dev code when running the demo.
 
 # TODO
 

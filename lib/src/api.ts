@@ -13,7 +13,7 @@ export class Api {
 
     static start(options: ApiOptions = {}) {
         this.registerMiddlewares();
-        this.registerRoutes();
+        this.registerControllers();
 
         const port = options.port || 3000;
         this.app.listen(port, () => {
@@ -22,20 +22,22 @@ export class Api {
     }
 
     private static registerMiddlewares() {
-        apiGlobal.middleware.forEach(middleware => {
-            const middlewareInstance = new middleware.target();
-            this.processInjectables(middlewareInstance);
+        Object.keys(apiGlobal.middleware).forEach(className => {
+            const middleware = apiGlobal.middleware[className];
+            const middlewareInstance = new middleware.clazz();
+            this.instantiateInjectables(middlewareInstance);
             this.app.use(middleware.path, (req, res, next) => {
-                this.processInjectables(middlewareInstance, { req, res });
+                this.instantiateInjectables(middlewareInstance, { req, res });
                 middlewareInstance.intercept(req, res, next);
             });
         });
     }
 
-    private static registerRoutes() {
-        apiGlobal.routes.forEach(route => {
-            const controller = route.target;
-            const proto = controller.prototype;
+    private static registerControllers() {
+        Object.keys(apiGlobal.controllers).forEach(className => {
+            const controller = apiGlobal.controllers[className];
+            const controllerInstance = new controller.clazz();
+            const proto = controller.clazz.prototype;
             const methods = Reflection.getClassMethods(proto);
 
             methods.forEach(method => {
@@ -44,34 +46,49 @@ export class Api {
                     return;
                 }
 
-                (this.app as any)[endpoint.method]((controller as any).path + endpoint.path, (req: any, res: any) => {
-                    const controllerInstance = new controller();
-                    this.processInjectables(controllerInstance, { req, res });
-                    controllerInstance[method](req, res);
-                });
+                (this.app as any)[endpoint.method](controller.path + endpoint.path, asyncRoute(async (req: any, res: any, next: any) => {
+                    const controllerInstance = new controller.clazz();
+                    this.instantiateInjectables(controllerInstance, { req, res });
+
+                    try {
+                        await controllerInstance[method](req, res, next);
+                    } catch (err) {
+                        console.error(err);
+                        next(err);
+                        throw err;
+                    }
+                }));
             });
         });
     }
 
-    private static processInjectables(instance: any, context?: { req: express.Request, res: express.Response }) {
+    private static instantiateInjectables(instance: any, context?: { req: express.Request, res: express.Response }) {
         const injectables = Reflection.getInjectables(instance.__proto__);
 
         injectables.forEach((injectableName: string) => {
             const clazzName = injectableName.charAt(0).toUpperCase() + injectableName.slice(1);
 
-            const injectable = apiGlobal.injectables.find(i => i.target.name === clazzName);
+            
 
             if (clazzName === 'HttpContext') {
                 instance[injectableName] = context;
                 return;
             }
-            
-            instance[injectableName] = new injectable.target();
 
-            this.processInjectables(instance[injectableName], context)
+            const injectable = apiGlobal.injectables[clazzName];
+            
+            instance[injectableName] = new injectable.clazz();
+
+            this.instantiateInjectables(instance[injectableName], context)
         });
     }
 }
+
+
+const asyncRoute =
+  (route: any) =>
+  (req: any, res: any, next = console.error) =>
+    Promise.resolve(route(req, res, next)).catch(next);
 
 export interface ApiOptions {
     port?: number;

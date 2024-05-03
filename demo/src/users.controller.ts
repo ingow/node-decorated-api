@@ -8,10 +8,18 @@ export class UsersController {
     private userService!: UserService;
 
     @Get('/')
-    getUsers(req: Request, res: Response) {
-        const userId = this.userService.getUser();
+    async getUsers(req: Request, res: Response) {
+        const userId = await this.userService.getUser();
         res.json({
             id: userId
         }); 
+    }
+
+    @Get('/error')
+    async getUsersWithError(req: Request, res: Response) {
+        this.userService.getUserWithError();
+        res.json({
+            ok: true
+        });
     }
 }

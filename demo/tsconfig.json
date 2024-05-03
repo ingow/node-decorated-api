@@ -10,5 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
+    "paths": {
+      "node-decorated-api": ["../lib/src/index.ts"]}
   }
 }

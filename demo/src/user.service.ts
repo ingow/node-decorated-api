@@ -6,7 +6,15 @@ export class UserService {
     @Inject()
     private httpContext!: HttpContext;
 
-    public getUser() {
-        return (this.httpContext.req as any)!.userId;
+    public getUser(): Promise<string> {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve((this.httpContext.req as any).userId);
+            }, 1000);
+        });
+    }
+
+    public getUserWithError() {
+        throw new Error('Error');
     }
 }

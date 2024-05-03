@@ -2,9 +2,9 @@ import { apiGlobal } from "../api-global";
 
 export function Injectable() {
     return (target: any) => {
-        apiGlobal.injectables.push({
-            target: target
-        });
+        apiGlobal.injectables[target.name] = {
+            clazz: target
+        };
     };
 }
 

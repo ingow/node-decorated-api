@@ -3,9 +3,9 @@ import { apiGlobal } from "../../api-global";
 export function Controller(path: string) {
     return (target: any) => {
         target.path = path;
-        apiGlobal.routes.push({
+        apiGlobal.controllers[target.name] = {
             path: path,
-            target: target
-        });
+            clazz: target
+        };
     };
 }

@@ -17,8 +17,12 @@ export class UserService {
     @Inject()
     private httpContext!: HttpContext;
 
-    public getUser() {
-        return (this.httpContext.req as any)!.userId;
+    public getUser(): Promise<string> {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve((this.httpContext.req as any).userId);
+            }, 1000);
+        });
     }
 }
 ```
@@ -35,8 +39,8 @@ export class UsersController {
     private userService!: UserService;
 
     @Get('/')
-    getUsers(req: Request, res: Response) {
-        const userId = this.userService.getUser();
+    async getUsers(req: Request, res: Response) {
+        const userId = await this.userService.getUser();
         res.json({
             id: userId
         }); 
@@ -86,6 +90,5 @@ We use the `tsconfig.json` `paths` to point to the dev code when running the dem
 # TODO
 
 1. Generate OpenAPI/swagger json
-2. Improve automatic error handling in controllers
-3. Make `@Inject` work with any attribute name
-4. Auto load Classes so we don't need to use `Api.add`
+2. Make `@Inject` work with any attribute name
+3. Auto load Classes so we don't need to use `Api.add`

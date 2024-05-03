@@ -2,11 +2,7 @@ import { Api } from './api';
 import { Controller } from './decorators/api/controller.decorator';
 
 @Controller('/test')
-class TestController {
-  constructor() {
-    console.log('TestController');
-  }
-}
+class TestController {}
 
 describe('Api', () => {
   it('should add classes', () => {

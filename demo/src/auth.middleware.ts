@@ -6,4 +6,4 @@ export class AuthMiddleware {
         (req as any).userId = 123;
         next();
     }
-};
+}

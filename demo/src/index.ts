@@ -4,11 +4,6 @@ import { UserService } from './user.service';
 import { UsersController } from './users.controller';
 
 //Add all classes that will be part of the API
-Api.add([
-    AuthMiddleware, 
-    
-    UsersController,
-    UserService,
-]);
+Api.add([AuthMiddleware, UsersController, UserService]);
 
 Api.start();

@@ -9,7 +9,7 @@
         "program": "${workspaceRoot}/demo/src/index.ts",
         "cwd": "${workspaceRoot}/demo",
         "internalConsoleOptions": "openOnSessionStart",
-        "skipFiles": ["<node_internals>/**", "/demo/node_modules/**"]
+        "skipFiles": ["<node_internals>/**", "/demo/node_modules/**"],
       }
     ]
   }
